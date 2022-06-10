@@ -20,6 +20,7 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffectUtil;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.EntityBucketItem;
+import net.minecraft.item.FoodComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
@@ -84,6 +85,14 @@ public class TooltipExtender {
 				lines.add(Text.literal("Location: " + pos.getX() + " " + pos.getY() + " " + pos.getZ()).formatted(Formatting.GRAY));
 			}
 		}
+		if (is.getItem().equals(Items.CLOCK) && is.getNbt() == null) {
+			@SuppressWarnings("resource")
+			ClientWorld you = MinecraftClient.getInstance().world;
+			
+			long time = you.getTimeOfDay() % 24000;
+			
+			lines.add(Text.literal("Time: " + ((time / 1000) + 6) % 24 + ":" + String.format("%02d", (int) (time % 1000 / (1000 / 60.0)))).formatted(Formatting.GRAY));
+		}
 		if ((is.getItem().equals(Items.BEEHIVE) || is.getItem().equals(Items.BEE_NEST)) && is.getNbt() != null) {
 			NbtCompound nbt = is.getNbt();
 			if (nbt.contains("BlockEntityTag", NbtElement.COMPOUND_TYPE)) {
@@ -104,6 +113,11 @@ public class TooltipExtender {
 		}
 		if (is.getItem() instanceof EntityBucketItem) {
 			buildFishTooltip(is, lines);
+		}
+		if (is.getItem().getFoodComponent() != null) {
+			FoodComponent food = is.getItem().getFoodComponent();
+			lines.add(Text.literal("Hunger: " + food.getHunger()).formatted(Formatting.GRAY));
+			lines.add(Text.literal("Saturation: " + String.format("%.1f", ((float) food.getHunger() * food.getSaturationModifier() * 2.0f))).formatted(Formatting.GRAY));
 		}
 		if (is.getRepairCost() > 0) {
 			lines.add(Text.literal("Repair Cost: " + is.getRepairCost()).formatted(Formatting.GRAY));
