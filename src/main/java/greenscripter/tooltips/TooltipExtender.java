@@ -23,6 +23,7 @@ import net.minecraft.item.EntityBucketItem;
 import net.minecraft.item.FoodComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.WrittenBookItem;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -84,6 +85,12 @@ public class TooltipExtender {
 			} else {
 				lines.add(Text.literal("Location: " + pos.getX() + " " + pos.getY() + " " + pos.getZ()).formatted(Formatting.GRAY));
 			}
+		}
+		if (is.getItem().equals(Items.WRITTEN_BOOK) && is.getNbt() != null) {
+			NbtCompound nbt = is.getNbt();
+			int pages = WrittenBookItem.getPageCount(is);
+			lines.add(Text.literal("Page Count: " + pages).formatted(Formatting.GRAY));
+			lines.add(Text.literal("Opened: " + (nbt.getByte("resolved") == 1 ? "true" : "false")).formatted(Formatting.GRAY));
 		}
 		if (is.getItem().equals(Items.CLOCK) && is.getNbt() == null) {
 			@SuppressWarnings("resource")
