@@ -24,6 +24,8 @@ import net.minecraft.item.FoodComponent;
 import net.minecraft.item.HorseArmorItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.MiningToolItem;
+import net.minecraft.item.ToolItem;
 import net.minecraft.item.WrittenBookItem;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -97,7 +99,15 @@ public class TooltipExtender {
 			int bonus = ((HorseArmorItem) is.getItem()).getBonus();
 			lines.add(Text.literal(""));
 			lines.add(Text.literal("When on Horse:").formatted(Formatting.GRAY));
-			lines.add(Text.literal("+" + bonus+" Armor").formatted(Formatting.BLUE));
+			lines.add(Text.literal("+" + bonus + " Armor").formatted(Formatting.BLUE));
+		}
+		if (is.getItem() instanceof ToolItem) {
+			float speed = ((ToolItem) is.getItem()).getMaterial().getMiningSpeedMultiplier();
+			int level = ((ToolItem) is.getItem()).getMaterial().getMiningLevel();
+			final String[] miningLevels = { "Stone", "Iron", "Diamond", "Obsidian", "Obsidian+" };
+			String levelText = level < miningLevels.length ? miningLevels[level] : level + "";
+			lines.add(Text.literal(String.format(" %.1f", speed) + " Mining Speed").formatted(Formatting.DARK_GREEN));
+			lines.add(Text.literal(" " + levelText + " Mining Level").formatted(Formatting.DARK_GREEN));
 		}
 		if (is.getItem().equals(Items.CLOCK) && is.getNbt() == null) {
 			@SuppressWarnings("resource")
