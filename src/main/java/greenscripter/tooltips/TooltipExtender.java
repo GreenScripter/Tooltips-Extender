@@ -131,7 +131,6 @@ public class TooltipExtender {
 				lines.add(Text.literal("Invulnerable").formatted(Formatting.GRAY));
 			}
 			if (nbt.contains("Variant", NbtElement.INT_TYPE)) {
-				//					System.out.println("Has Health");
 				int type = nbt.getInt("Variant");
 				final String[] names = new String[] { "Pink", "White", "Yellow", "Brown", "Blue" };
 				String name;
@@ -143,11 +142,9 @@ public class TooltipExtender {
 				lines.add(Text.literal(name).formatted(Formatting.GRAY));
 			}
 			if (nbt.contains("Health", 99)) {
-				//					System.out.println("Has Health");
 				lines.add(Text.literal("Health: " + String.format("%.1f", nbt.getFloat("Health"))).formatted(Formatting.GRAY));
 			}
 			if (nbt.contains("Age", NbtElement.INT_TYPE)) {
-				//					System.out.println("Has Health");
 				int age = nbt.getInt("Age");
 				if (age >= 0) {
 					lines.add(Text.literal("Adult").formatted(Formatting.GRAY));

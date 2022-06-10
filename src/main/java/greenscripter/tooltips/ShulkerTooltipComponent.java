@@ -6,7 +6,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
@@ -19,11 +18,9 @@ public class ShulkerTooltipComponent implements TooltipComponent {
 	
 	public static final Identifier TEXTURE = new Identifier("textures/gui/container/bundle.png");
 	private final DefaultedList<ItemStack> inventory;
-	private final int occupancy;
 	
 	public ShulkerTooltipComponent(ShulkerTooltipData data) {
 		this.inventory = data.getInventory();
-		this.occupancy = data.getBundleOccupancy();
 	}
 	
 	@Override
@@ -40,7 +37,7 @@ public class ShulkerTooltipComponent implements TooltipComponent {
 	public void drawItems(TextRenderer textRenderer, int x, int y, MatrixStack matrices, ItemRenderer itemRenderer, int z) {
 		int i = this.getColumns();
 		int j = this.getRows();
-		boolean bl = true;//this.occupancy >= 64;
+		boolean bl = true;
 		int k = 0;
 		for (int l = 0; l < j; ++l) {
 			for (int m = 0; m < i; ++m) {
@@ -61,9 +58,6 @@ public class ShulkerTooltipComponent implements TooltipComponent {
 		this.draw(matrices, x, y, z, Sprite.SLOT);
 		itemRenderer.renderInGuiWithOverrides(itemStack, x + 1, y + 1, index);
 		itemRenderer.renderGuiItemOverlay(textRenderer, itemStack, x + 1, y + 1);
-//		if (index == 0) {
-//			HandledScreen.drawSlotHighlight(matrices, x + 1, y + 1, z);
-//		}
 	}
 	
 	private void drawOutline(int x, int y, int columns, int rows, MatrixStack matrices, int z) {
@@ -90,12 +84,10 @@ public class ShulkerTooltipComponent implements TooltipComponent {
 	
 	private int getColumns() {
 		return 9;
-		//		return Math.max(2, (int) Math.ceil(Math.sqrt((double) this.inventory.size() + 1.0)));
 	}
 	
 	private int getRows() {
 		return 3;
-		//		return (int) Math.ceil(((double) this.inventory.size() + 1.0) / (double) this.getColumns());
 	}
 	
 	@Environment(value = EnvType.CLIENT)

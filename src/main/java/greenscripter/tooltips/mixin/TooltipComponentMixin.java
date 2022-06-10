@@ -32,16 +32,6 @@ public class TooltipComponentMixin {
 		}
 		this.renderTooltipFromComponents(matrices, list, x, y);
 		ci.cancel();
-//		Caused by: org.spongepowered.asm.mixin.injection.throwables.InvalidInjectionException: Invalid descriptor on tooltips.mixins.json:TooltipComponentMixin->@Inject::
-//			renderTooltip(Lnet/minecraft/client/util/math/MatrixStack;Ljava/util/List;Ljava/util/Optional;IILorg/spongepowered/asm/mixin/injection/callback/CallbackInfo;)V
-//			from mod extendedtooltips! Expected 
-//			(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/item/ItemStack;IILorg/spongepowered/asm/mixin/injection/callback/CallbackInfo;)V
-//			but found
-//			(Lnet/minecraft/client/util/math/MatrixStack;Ljava/util/List;Ljava/util/Optional;IILorg/spongepowered/asm/mixin/injection/callback/CallbackInfo;)V [INJECT Applicator Phase -> tooltips.mixins.json:TooltipComponentMixin -> Apply Injections ->  -> Inject -> tooltips.mixins.json:TooltipComponentMixin->@Inject::renderTooltip(Lnet/minecraft/client/util/math/MatrixStack;Ljava/util/List;Ljava/util/Optional;IILorg/spongepowered/asm/mixin/injection/callback/CallbackInfo;)V from mod extendedtooltips]
-
-		//		if (data instanceof ShulkerTooltipData) {
-		//			ci.setReturnValue(new ShulkerTooltipComponent((ShulkerTooltipData) data));
-		//		}
 	}
 	
 	@Shadow

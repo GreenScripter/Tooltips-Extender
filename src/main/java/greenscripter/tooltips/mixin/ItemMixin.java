@@ -9,7 +9,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import greenscripter.tooltips.ShulkerTooltipData;
 import net.minecraft.block.ShulkerBoxBlock;
-import net.minecraft.client.item.BundleTooltipData;
 import net.minecraft.client.item.TooltipData;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.item.BlockItem;
