@@ -21,6 +21,7 @@ import net.minecraft.entity.effect.StatusEffectUtil;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.EntityBucketItem;
 import net.minecraft.item.FoodComponent;
+import net.minecraft.item.HorseArmorItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.WrittenBookItem;
@@ -91,6 +92,12 @@ public class TooltipExtender {
 			int pages = WrittenBookItem.getPageCount(is);
 			lines.add(Text.literal("Page Count: " + pages).formatted(Formatting.GRAY));
 			lines.add(Text.literal("Opened: " + (nbt.getByte("resolved") == 1 ? "true" : "false")).formatted(Formatting.GRAY));
+		}
+		if (is.getItem() instanceof HorseArmorItem) {
+			int bonus = ((HorseArmorItem) is.getItem()).getBonus();
+			lines.add(Text.literal(""));
+			lines.add(Text.literal("When on Horse:").formatted(Formatting.GRAY));
+			lines.add(Text.literal("+" + bonus+" Armor").formatted(Formatting.BLUE));
 		}
 		if (is.getItem().equals(Items.CLOCK) && is.getNbt() == null) {
 			@SuppressWarnings("resource")
