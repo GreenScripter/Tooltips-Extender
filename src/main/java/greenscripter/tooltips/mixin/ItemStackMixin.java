@@ -15,6 +15,7 @@ import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
@@ -49,7 +50,7 @@ public class ItemStackMixin {
 		lines.addAll(TooltipExtender.extendTooltips(is, player, context));
 		int hide = getHideFlags();
 		if (hide != 0) {
-			lines.add(Text.literal("Hide Flags: " + hide).formatted(Formatting.GRAY));
+			lines.add(new LiteralText("Hide Flags: " + hide).formatted(Formatting.GRAY));
 		}
 		lines.addAll(linesTail);
 		ci.setReturnValue(lines);
