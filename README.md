@@ -4,7 +4,6 @@ A simple mod to add more informational tooltips to items such as the contents of
 - Suspicious Stew effects.
 - Compass target coordinates.
 - Lodestone Compass target dimension and coordinates.
-- Recovery Compass target dimensions and coordinates.
 - Written Book page count and opened status.
 - Horse armor protection values.
 - Tool mining speed and levels.
