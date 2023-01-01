@@ -37,7 +37,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.GlobalPos;
 
 public class TooltipExtender {
-	
+
 	public static List<Text> extendTooltips(ItemStack is, PlayerEntity player, TooltipContext context) {
 		List<Text> lines = new ArrayList<>();
 		if (is.getItem().equals(Items.SUSPICIOUS_STEW)) {
@@ -69,24 +69,26 @@ public class TooltipExtender {
 		if (is.getItem().equals(Items.RECOVERY_COMPASS)) {
 			@SuppressWarnings("resource")
 			ClientPlayerEntity you = MinecraftClient.getInstance().player;
-			
-			GlobalPos pos = you.getLastDeathPos().orElse(null);
-			if (pos == null) {
-				lines.add(Text.literal("Untracked").formatted(Formatting.GRAY));
-			} else {
-				lines.add(Text.literal("Dimension: " + pos.getDimension().getValue()).formatted(Formatting.GRAY));
-				lines.add(Text.literal("Location: " + pos.getPos().getX() + " " + pos.getPos().getY() + " " + pos.getPos().getZ()).formatted(Formatting.GRAY));
+			if (you != null) {
+				GlobalPos pos = you.getLastDeathPos().orElse(null);
+				if (pos == null) {
+					lines.add(Text.literal("Untracked").formatted(Formatting.GRAY));
+				} else {
+					lines.add(Text.literal("Dimension: " + pos.getDimension().getValue()).formatted(Formatting.GRAY));
+					lines.add(Text.literal("Location: " + pos.getPos().getX() + " " + pos.getPos().getY() + " " + pos.getPos().getZ()).formatted(Formatting.GRAY));
+				}
 			}
 		}
 		if (is.getItem().equals(Items.COMPASS) && is.getNbt() == null) {
 			@SuppressWarnings("resource")
 			ClientWorld you = MinecraftClient.getInstance().world;
-			
-			BlockPos pos = you.getSpawnPos();
-			if (pos == null) {
-				lines.add(Text.literal("Untracked").formatted(Formatting.GRAY));
-			} else {
-				lines.add(Text.literal("Location: " + pos.getX() + " " + pos.getY() + " " + pos.getZ()).formatted(Formatting.GRAY));
+			if (you != null) {
+				BlockPos pos = you.getSpawnPos();
+				if (pos == null) {
+					lines.add(Text.literal("Untracked").formatted(Formatting.GRAY));
+				} else {
+					lines.add(Text.literal("Location: " + pos.getX() + " " + pos.getY() + " " + pos.getZ()).formatted(Formatting.GRAY));
+				}
 			}
 		}
 		if (is.getItem().equals(Items.WRITTEN_BOOK) && is.getNbt() != null) {
@@ -112,10 +114,12 @@ public class TooltipExtender {
 		if (is.getItem().equals(Items.CLOCK) && is.getNbt() == null) {
 			@SuppressWarnings("resource")
 			ClientWorld you = MinecraftClient.getInstance().world;
-			
-			long time = you.getTimeOfDay() % 24000;
-			
-			lines.add(Text.literal("Time: " + ((time / 1000) + 6) % 24 + ":" + String.format("%02d", (int) (time % 1000 / (1000 / 60.0)))).formatted(Formatting.GRAY));
+			if (you != null) {
+
+				long time = you.getTimeOfDay() % 24000;
+
+				lines.add(Text.literal("Time: " + ((time / 1000) + 6) % 24 + ":" + String.format("%02d", (int) (time % 1000 / (1000 / 60.0)))).formatted(Formatting.GRAY));
+			}
 		}
 		if ((is.getItem().equals(Items.BEEHIVE) || is.getItem().equals(Items.BEE_NEST)) && is.getNbt() != null) {
 			NbtCompound nbt = is.getNbt();
@@ -148,10 +152,10 @@ public class TooltipExtender {
 		}
 		return lines;
 	}
-	
+
 	private static void buildFishTooltip(ItemStack stack, List<Text> lines) {
 		NbtCompound nbt = stack.getNbt();
-		
+
 		if (nbt != null) {
 			if (nbt.contains("NoAI") && nbt.getBoolean("NoAI")) {
 				lines.add(Text.literal("No AI").formatted(Formatting.GRAY));
@@ -194,7 +198,7 @@ public class TooltipExtender {
 			}
 		}
 	}
-	
+
 	private static void buildStewTooltip(ItemStack stack, List<Text> list, float durationMultiplier) {
 		MutableText mutableText;
 		List<StatusEffectInstance> list2 = new ArrayList<>();
@@ -239,25 +243,25 @@ public class TooltipExtender {
 			}
 		}
 	}
-	
+
 	private static void getStewPotionEffects(@Nullable NbtCompound nbt, List<StatusEffectInstance> list) {
 		NbtCompound nbtCompound = nbt;
 		if (nbtCompound != null && nbtCompound.contains("Effects", 9)) {
 			NbtList nbtList = nbtCompound.getList("Effects", 10);
-			
+
 			for (int i = 0; i < nbtList.size(); ++i) {
 				int j = 160;
 				NbtCompound nbtCompound2 = nbtList.getCompound(i);
 				if (nbtCompound2.contains("EffectDuration", 3)) {
 					j = nbtCompound2.getInt("EffectDuration");
 				}
-				
+
 				StatusEffect statusEffect = StatusEffect.byRawId(nbtCompound2.getByte("EffectId"));
 				if (statusEffect != null) {
 					list.add(new StatusEffectInstance(statusEffect, j));
 				}
 			}
 		}
-		
+
 	}
 }
