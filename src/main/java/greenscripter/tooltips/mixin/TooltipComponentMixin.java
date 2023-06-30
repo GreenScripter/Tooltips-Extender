@@ -12,6 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import greenscripter.tooltips.ShulkerTooltipComponent;
 import greenscripter.tooltips.ShulkerTooltipData;
+
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.HoveredTooltipPositioner;
@@ -32,10 +33,11 @@ public class TooltipComponentMixin {
 		} else {
 			data2.ifPresent(data -> list.add(1, TooltipComponent.of(data)));
 		}
+
 		this.drawTooltip(textRenderer, list, x, y, HoveredTooltipPositioner.INSTANCE);
 		ci.cancel();
 	}
-	
+
 	@Shadow
 	private void drawTooltip(TextRenderer textRenderer, List<TooltipComponent> components, int x, int y, TooltipPositioner positioner) {}
 	
