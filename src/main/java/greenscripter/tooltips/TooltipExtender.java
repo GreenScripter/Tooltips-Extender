@@ -222,7 +222,7 @@ public class TooltipExtender {
 					mutableText = Text.translatable("potion.withAmplifier", mutableText, Text.translatable("potion.potency." + statusEffectInstance.getAmplifier()));
 				}
 				if (statusEffectInstance.getDuration() > 20) {
-					mutableText = Text.translatable("potion.withDuration", mutableText, StatusEffectUtil.durationToString(statusEffectInstance, durationMultiplier));
+					mutableText = Text.translatable("potion.withDuration", mutableText, StatusEffectUtil.getDurationText(statusEffectInstance, durationMultiplier));
 				}
 				list.add(mutableText.formatted(statusEffect.getCategory().getFormatting()));
 			}
