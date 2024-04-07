@@ -244,7 +244,7 @@ public class TooltipExtender {
 
 	}
 
-	private static List<StatusEffectInstance> getStewPotionEffects(@Nullable NbtCompound nbt) {
+	public static List<StatusEffectInstance> getStewPotionEffects(@Nullable NbtCompound nbt) {
 		List<StatusEffectInstance> list = new ArrayList<>();
 		NbtCompound nbtCompound = nbt;
 		if (nbtCompound != null && nbtCompound.contains("effects", 9)) {

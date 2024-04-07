@@ -36,7 +36,7 @@ public class EnchantmentLabeller {
 		names.put("soul_speed", "SO");
 		levels.put("soul_speed", 3);
 		names.put("swift_sneak", "SS");
-		levels.put("swift_sneak", 5);
+		levels.put("swift_sneak", 3);
 		names.put("sharpness", "SH");
 		levels.put("sharpness", 5);
 		names.put("smite", "SZ");
