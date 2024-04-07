@@ -13,6 +13,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.entity.attribute.AttributeModifierCreator;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.effect.StatusEffect;
@@ -24,15 +25,17 @@ import net.minecraft.item.FoodComponent;
 import net.minecraft.item.HorseArmorItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.item.MiningToolItem;
 import net.minecraft.item.ToolItem;
 import net.minecraft.item.WrittenBookItem;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.registry.Registries;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.GlobalPos;
 
@@ -41,7 +44,7 @@ public class TooltipExtender {
 	public static List<Text> extendTooltips(ItemStack is, PlayerEntity player, TooltipContext context) {
 		List<Text> lines = new ArrayList<>();
 		if (is.getItem().equals(Items.SUSPICIOUS_STEW)) {
-			buildStewTooltip(is, lines, 1.0F);
+			buildStewTooltip(is, lines, 1.0F, 20f);
 		}
 		if (is.getItem().equals(Items.COMPASS) && is.getNbt() != null) {
 			NbtCompound nbt = is.getNbt();
@@ -199,69 +202,67 @@ public class TooltipExtender {
 		}
 	}
 
-	private static void buildStewTooltip(ItemStack stack, List<Text> list, float durationMultiplier) {
-		MutableText mutableText;
-		List<StatusEffectInstance> list2 = new ArrayList<>();
-		getStewPotionEffects(stack.hasNbt() ? stack.getNbt() : null, list2);
-		ArrayList<Pair<EntityAttribute, EntityAttributeModifier>> list3 = Lists.newArrayList();
-		if (list2.isEmpty()) {
-			list.add((Text.translatable("effect.none")).formatted(Formatting.GRAY));
+	private static void buildStewTooltip(ItemStack stack, List<Text> list, float durationMultiplier, float tickRate) {
+		List<StatusEffectInstance> statusEffects = getStewPotionEffects(stack.getNbt());
+		ArrayList<Pair<EntityAttribute, EntityAttributeModifier>> list2 = Lists.newArrayList();
+		if (statusEffects.isEmpty()) {
+			list.add(Text.translatable("effect.none").formatted(Formatting.GRAY));
 		} else {
-			for (StatusEffectInstance statusEffectInstance : list2) {
-				mutableText = Text.translatable(statusEffectInstance.getTranslationKey());
+			for (StatusEffectInstance statusEffectInstance : statusEffects) {
+				MutableText mutableText = Text.translatable(statusEffectInstance.getTranslationKey());
 				StatusEffect statusEffect = statusEffectInstance.getEffectType();
-				Map<EntityAttribute, EntityAttributeModifier> map = statusEffect.getAttributeModifiers();
+				Map<EntityAttribute, AttributeModifierCreator> map = statusEffect.getAttributeModifiers();
 				if (!map.isEmpty()) {
-					for (Map.Entry<EntityAttribute, EntityAttributeModifier> entry : map.entrySet()) {
-						EntityAttributeModifier entityAttributeModifier = entry.getValue();
-						EntityAttributeModifier entityAttributeModifier2 = new EntityAttributeModifier(entityAttributeModifier.getName(), statusEffect.adjustModifierAmount(statusEffectInstance.getAmplifier(), entityAttributeModifier), entityAttributeModifier.getOperation());
-						list3.add(new Pair<EntityAttribute, EntityAttributeModifier>(entry.getKey(), entityAttributeModifier2));
+					for (Map.Entry<EntityAttribute, AttributeModifierCreator> entry : map.entrySet()) {
+						list2.add(new Pair<EntityAttribute, EntityAttributeModifier>(entry.getKey(), entry.getValue().createAttributeModifier(statusEffectInstance.getAmplifier())));
 					}
 				}
 				if (statusEffectInstance.getAmplifier() > 0) {
 					mutableText = Text.translatable("potion.withAmplifier", mutableText, Text.translatable("potion.potency." + statusEffectInstance.getAmplifier()));
 				}
-				if (statusEffectInstance.getDuration() > 20) {
-					mutableText = Text.translatable("potion.withDuration", mutableText, StatusEffectUtil.getDurationText(statusEffectInstance, durationMultiplier));
+				if (!statusEffectInstance.isDurationBelow(20)) {
+					mutableText = Text.translatable("potion.withDuration", mutableText, StatusEffectUtil.getDurationText(statusEffectInstance, durationMultiplier, tickRate));
 				}
 				list.add(mutableText.formatted(statusEffect.getCategory().getFormatting()));
 			}
 		}
-		if (!list3.isEmpty()) {
-			list.add(Text.empty());
+		if (!list2.isEmpty()) {
+			list.add(ScreenTexts.EMPTY);
 			list.add(Text.translatable("potion.whenDrank").formatted(Formatting.DARK_PURPLE));
-			for (Pair<EntityAttribute, EntityAttributeModifier> pair : list3) {
-				EntityAttributeModifier modifier = (EntityAttributeModifier) pair.getSecond();
-				double statusEffect = ((EntityAttributeModifier) modifier).getValue();
-				double d = ((EntityAttributeModifier) modifier).getOperation() == EntityAttributeModifier.Operation.MULTIPLY_BASE || ((EntityAttributeModifier) modifier).getOperation() == EntityAttributeModifier.Operation.MULTIPLY_TOTAL ? ((EntityAttributeModifier) modifier).getValue() * 100.0 : ((EntityAttributeModifier) modifier).getValue();
-				if (statusEffect > 0.0) {
-					list.add(Text.translatable("attribute.modifier.plus." + ((EntityAttributeModifier) modifier).getOperation().getId(), ItemStack.MODIFIER_FORMAT.format(d), Text.translatable(((EntityAttribute) pair.getFirst()).getTranslationKey())).formatted(Formatting.BLUE));
+			for (Pair<?, ?> pair : list2) {
+				EntityAttributeModifier entityAttributeModifier = (EntityAttributeModifier) pair.getSecond();
+				double d = entityAttributeModifier.getValue();
+				double e = entityAttributeModifier.getOperation() == EntityAttributeModifier.Operation.MULTIPLY_BASE || entityAttributeModifier.getOperation() == EntityAttributeModifier.Operation.MULTIPLY_TOTAL ? entityAttributeModifier.getValue() * 100.0 : entityAttributeModifier.getValue();
+				if (d > 0.0) {
+					list.add(Text.translatable("attribute.modifier.plus." + entityAttributeModifier.getOperation().getId(), ItemStack.MODIFIER_FORMAT.format(e), Text.translatable(((EntityAttribute) pair.getFirst()).getTranslationKey())).formatted(Formatting.BLUE));
 					continue;
 				}
-				if (!(statusEffect < 0.0)) continue;
-				list.add(Text.translatable("attribute.modifier.take." + ((EntityAttributeModifier) modifier).getOperation().getId(), ItemStack.MODIFIER_FORMAT.format(d *= -1.0), Text.translatable(((EntityAttribute) pair.getFirst()).getTranslationKey())).formatted(Formatting.RED));
+				if (!(d < 0.0)) continue;
+				list.add(Text.translatable("attribute.modifier.take." + entityAttributeModifier.getOperation().getId(), ItemStack.MODIFIER_FORMAT.format(e *= -1.0), Text.translatable(((EntityAttribute) pair.getFirst()).getTranslationKey())).formatted(Formatting.RED));
 			}
 		}
+
 	}
 
-	private static void getStewPotionEffects(@Nullable NbtCompound nbt, List<StatusEffectInstance> list) {
+	private static List<StatusEffectInstance> getStewPotionEffects(@Nullable NbtCompound nbt) {
+		List<StatusEffectInstance> list = new ArrayList<>();
 		NbtCompound nbtCompound = nbt;
-		if (nbtCompound != null && nbtCompound.contains("Effects", 9)) {
-			NbtList nbtList = nbtCompound.getList("Effects", 10);
+		if (nbtCompound != null && nbtCompound.contains("effects", 9)) {
+			NbtList nbtList = nbtCompound.getList("effects", 10);
 
 			for (int i = 0; i < nbtList.size(); ++i) {
 				int j = 160;
 				NbtCompound nbtCompound2 = nbtList.getCompound(i);
-				if (nbtCompound2.contains("EffectDuration", 3)) {
-					j = nbtCompound2.getInt("EffectDuration");
+				if (nbtCompound2.contains("duration", 3)) {
+					j = nbtCompound2.getInt("duration");
 				}
-
-				StatusEffect statusEffect = StatusEffect.byRawId(nbtCompound2.getByte("EffectId"));
+				StatusEffect statusEffect = Registries.STATUS_EFFECT.get(Identifier.tryParse(nbtCompound2.getString("id")));
 				if (statusEffect != null) {
 					list.add(new StatusEffectInstance(statusEffect, j));
 				}
 			}
 		}
+		return list;
 
 	}
 }

@@ -28,8 +28,7 @@ public class ItemMixin {
 				if (nbtCompound.contains("Items", 9)) {
 					DefaultedList<ItemStack> items = DefaultedList.ofSize(27, ItemStack.EMPTY);
 					Inventories.readNbt(nbtCompound, items);
-					DefaultedList<ItemStack> result = DefaultedList.ofSize(28);
-					result.add(ItemStack.EMPTY);
+					DefaultedList<ItemStack> result = DefaultedList.ofSize(27);
 					for (int i = 0; i < 27; i++) {
 						result.add(items.get(i));
 					}
