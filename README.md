@@ -15,3 +15,4 @@ A simple mod to add more informational tooltips to items such as the contents of
 - Item extra anvil repair cost.
 - Disable the hide flags tag and display its value.
 - Complete grid of shulker contents.
+- Color code suspicious stews with positive and negative effects.
